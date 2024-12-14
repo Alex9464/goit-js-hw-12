@@ -6,10 +6,11 @@ export function renderGallery(images, container) {
 
   const markup = images
   .map(
-    ({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => `
+    ({ webformatURL, largeImageURL, tags, likes, views, comments, downloads, webformatWidth, webformatHeight }) => `
     <div class="photo-card">
       <a href="${largeImageURL}" class="gallery-link">
-        <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+        <img src="${webformatURL}" alt="${tags}" loading="lazy" width="${webformatWidth}" 
+        height="${webformatHeight}" />
       </a>
       <div class="info">
         <p class="info-item"><b>Likes:</b> ${likes}</p>

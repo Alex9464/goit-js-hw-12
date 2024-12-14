@@ -13,6 +13,7 @@ const loadingIndicator = document.querySelector('#loading');
 let currentPage = 1;
 let currentQuery = '';
 const perPage = 15;
+let isLoading = false;
 
 const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
@@ -43,17 +44,17 @@ loadMoreButton.addEventListener('click', async () => {
 });
 
 async function loadImages() {
+  if (isLoading) return;
+  isLoading = true;
+
   try {
     loadingIndicator.style.display = 'block';
     const data = await fetchImages(currentQuery, currentPage, perPage);
 
-    loadingIndicator.style.display = 'none';
-
     if (data && data.hits.length > 0) {
       renderGallery(data.hits, galleryContainer);
       lightbox.refresh();
-
-      iziToast.success({ message: `Loaded ${data.hits.length} images!` });
+      smoothScroll();
 
       if (currentPage * perPage >= data.totalHits) {
         iziToast.info({ message: "We're sorry, but you've reached the end of search results." });
@@ -65,5 +66,16 @@ async function loadImages() {
   } catch (error) {
     iziToast.error({ message: 'Failed to load images. Please try again later!' });
     console.error(error);
+  } finally {
+    loadingIndicator.style.display = 'none';
+    isLoading = false;
   }
+}
+
+function smoothScroll() {
+  const cardHeight = document.querySelector('.gallery .photo-card')?.getBoundingClientRect()?.height || 0;
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 }
